@@ -1,0 +1,25 @@
+{
+  "name": "react-workshop",
+  "version": "1.0.0",
+  "description": "Example app for the React workshop",
+  "main": "main.js",
+  "dependencies": {
+    "react": "^0.14.1",
+    "react-dom": "^0.14.1",
+    "babelify": "^6.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbitis/react-workshop.git"
+  },
+  "author": "Gabriel Bitis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gbitis/react-workshop/issues"
+  },
+  "homepage": "https://github.com/gbitis/react-workshop#readme"
+}

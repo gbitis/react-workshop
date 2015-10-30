@@ -5,12 +5,7 @@ var ActionTypes = Constants.ActionTypes;
 
 var CommentsListActions = {
   
-  commentsLoaded: function(data) {
-    Dispatcher.dispatch({
-      type: Constants.ActionTypes.COMMENTS_LOADED,
-      data,
-    });
-  }
+  // To do: Implement actions
   
 };
 

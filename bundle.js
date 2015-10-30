@@ -401,12 +401,7 @@ var ActionTypes = Constants.ActionTypes;
 
 var CommentsListActions = {
 
-  commentsLoaded: function commentsLoaded(data) {
-    Dispatcher.dispatch({
-      type: Constants.ActionTypes.COMMENTS_LOADED,
-      data: data
-    });
-  }
+  // To do: Implement actions
 
 };
 
@@ -434,35 +429,17 @@ module.exports = MemberListActions;
 },{"../constants/Constants":12,"../dispatcher/Dispatcher":13}],5:[function(require,module,exports){
 // Comment.react.js
 
-"use strict";
+'use strict';
 
 var React = require('react');
 
 var Comment = React.createClass({
-  displayName: "Comment",
+  displayName: 'Comment',
 
   render: function render() {
-    var time = new Date(this.props.timestamp);
+    // To do: implement comment component
 
-    return React.createElement(
-      "div",
-      { className: "commentSection" },
-      React.createElement(
-        "span",
-        { className: "commentAuthor" },
-        this.props.member_name
-      ),
-      React.createElement(
-        "span",
-        { className: "commentTime" },
-        time.toLocaleString()
-      ),
-      React.createElement(
-        "div",
-        { className: "commentText" },
-        this.props.comment
-      )
-    );
+    return React.createElement('div', null);
   }
 
 });
@@ -470,32 +447,18 @@ var Comment = React.createClass({
 module.exports = Comment;
 
 },{"react":177}],6:[function(require,module,exports){
-"use strict";
+'use strict';
 
 var React = require('react');
 
 var CommentForm = React.createClass({
-  displayName: "CommentForm",
+  displayName: 'CommentForm',
 
   render: function render() {
-    return React.createElement(
-      "form",
-      { className: "commentForm", onSubmit: this.onSubmit },
-      React.createElement("input", { type: "text", placeholder: "Say something...", ref: "text" }),
-      React.createElement("input", { type: "submit", value: "Post" })
-    );
-  },
-
-  onSubmit: function onSubmit(e) {
-    e.preventDefault();
-    var text = this.refs.text.value.trim();
-    if (!text) {
-      return;
-    }
-
-    this.refs.text.value = '';
-    this.props.onSubmit(text);
+    // To do: Implement post comment form
+    return React.createElement('div', null);
   }
+
 });
 
 module.exports = CommentForm;
@@ -511,34 +474,9 @@ var React = require('react');
 var CommentsList = React.createClass({
   displayName: "CommentsList",
 
-  _processCommentsList: function _processCommentsList() {
-    var commentsList = this.props.comments;
-    var commentsArr = Object.keys(commentsList).map(function (key) {
-      return commentsList[key];
-    });
-
-    commentsArr.sort(function (obj1, obj2) {
-      if (obj1.timestamp > obj2.timestamp) return -1;
-      if (obj1.timestamp < obj2.timestamp) return 1;
-      return 0;
-    });
-
-    return commentsArr.map(function (comment) {
-      return React.createElement(Comment, {
-        comment: comment.comment,
-        timestamp: comment.timestamp,
-        member_name: comment.member_name,
-        key: comment.id
-      });
-    });
-  },
-
   render: function render() {
-    return React.createElement(
-      "div",
-      null,
-      this._processCommentsList()
-    );
+    // To to: Implement CommentList component
+    return React.createElement("div", null);
   }
 
 });
@@ -547,7 +485,6 @@ module.exports = CommentsList;
 
 },{"./Comment.react":5,"react":177}],8:[function(require,module,exports){
 // CommentsListContainer.react.js
-/* global io() */
 
 "use strict";
 
@@ -560,34 +497,8 @@ var React = require('react');
 var CommentsListContainer = React.createClass({
   displayName: "CommentsListContainer",
 
-  getInitialState: function getInitialState() {
-    return {
-      comments: null
-    };
-  },
-
-  componentWillMount: function componentWillMount() {
-    ReactHooks.getPosts();
-  },
-
-  componentDidMount: function componentDidMount() {
-    CommentsListStore.addChangeListener(this._onChange);
-    /* global ReactHooks */
-    ReactHooks.callbackNewPost = this._onCommentsUpdate;
-  },
-
-  componentWillUnmount: function componentWillUnmount() {
-    CommentsListStore.removeChangeListener(this._onChange);
-  },
-
   render: function render() {
-    if (!this.state.comments) {
-      return React.createElement(
-        "div",
-        null,
-        "Loading comments..."
-      );
-    }
+    // To do: Implement CommentsListContainer component
 
     return React.createElement(
       "section",
@@ -596,26 +507,9 @@ var CommentsListContainer = React.createClass({
         "h2",
         null,
         "Comments"
-      ),
-      React.createElement(CommentForm, { onSubmit: this._onSubmit }),
-      React.createElement(CommentsList, { comments: this.state.comments })
+      )
     );
-  },
-
-  _onChange: function _onChange() {
-    this.setState({
-      comments: CommentsListStore.getAll()
-    });
-  },
-
-  _onSubmit: function _onSubmit(text) {
-    CommentsListStore.postComment(text);
-  },
-
-  _onCommentsUpdate: function _onCommentsUpdate(comments) {
-    CommentsListActions.commentsLoaded(comments);
   }
-
 });
 
 module.exports = CommentsListContainer;
@@ -830,98 +724,15 @@ var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
 
-var _comments = {};
-var _commentsCount = 0;
-var _commentsTotalCount = 0;
-var _nextURL = '';
-
-function _invalidate() {
-  _comments = {};
-  _commentsCount = 0;
-  _commentsTotalCount = 0;
-}
-
-function _processData(data) {
-  _invalidate();
-  data = JSON.parse(data);
-
-  _commentsCount = data.meta.count;
-  _commentsTotalCount = data.meta.total_count;
-
-  for (var commentIndex in data.results) {
-    var comment = data.results[commentIndex];
-    _comments[comment.event_comment_id] = {
-      id: comment.event_comment_id,
-      member_name: comment.member_name,
-      timestamp: comment.time,
-      comment: comment.comment
-    };
-  }
-};
-
 var CommentsListStore = assign({}, EventEmitter.prototype, {
-  getComments: function getComments() {
-    $.getJSON(Constants.commentsApiUrl, function (data) {
-      CommentsListActions.commentsLoaded(data);
-    });
-  },
-
-  postComment: function postComment(comment) {
-    $.ajax({
-      url: Constants.commentPostApiUrl,
-      type: "POST",
-      crossDomain: true,
-      data: {
-        comment: comment,
-        event_id: Constants.eventID,
-        key: Constants.apiKey,
-        notifications: 'off'
-      }
-    }).done(function (data) {
-      console.log('success', data);
-    });
-  },
-
-  emitChange: function emitChange() {
-    this.emit(CHANGE_EVENT);
-  },
-
-  addChangeListener: function addChangeListener(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  removeChangeListener: function removeChangeListener(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
-  },
-
-  /**
-   * @param {string} id
-   */
-  get: function get(id) {
-    return _comments[id];
-  },
-
-  getAll: function getAll() {
-    return _comments;
-  },
-
-  isAllLoaded: function isAllLoaded() {
-    return _commentsCount == _commentsTotalCount;
-  }
+  // To do: Implement commentsListStore
 
 });
 
 CommentsListStore.dispatchToken = Dispatcher.register(function (action) {
 
-  switch (action.type) {
-    case Constants.ActionTypes.COMMENTS_LOADED:
-      _processData(action.data);
-      CommentsListStore.emitChange();
-      break;
+  // To do: Handle actions
 
-    default:
-    // do nothing
-  }
 });
 
 module.exports = CommentsListStore;

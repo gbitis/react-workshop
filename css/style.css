@@ -1,0 +1,35 @@
+h1 {
+  font-family: Arial;
+}
+
+.loadMoreBtn {
+  background-color: #4285f4;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Arial;
+  padding: 10px;
+  text-align: center;
+  width: auto;
+}
+
+.member {
+  background-color: #f2f2f2;
+  border: 1px solid #ededed;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 50px;
+  margin: 5px;
+  padding: 15px;
+  width: 250px;
+}
+
+.yes {
+  color: green;
+  float: right;
+}
+
+.no {
+  color: red;
+  float: right;
+}

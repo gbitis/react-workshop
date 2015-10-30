@@ -16,22 +16,31 @@ var MembersList = React.createClass({
     });
     
     return membersArr.map(function (member) {
-      return <Member name={member.name} key={member.id}/>;
+      return (
+        <Member 
+          name={member.name} 
+          response={member.response}
+          key={member.id}
+        />
+      );
     });
   },
   
   render: function() {
-    
     var loadMoreBtn = 
       this.props.allLoaded ? 
       null :
-      <div onClick={this.props._getNextMembersPage}>Load more...</div>;
+      <div 
+        className="loadMoreBtn"
+        onClick={this.props._getNextMembersPage}>
+        Load more
+      </div>;
       
-    var members = this._processMembersList();
-    
     return (
       <div>
-        <ul>{members}</ul>
+        <div className="membersList">
+          {this._processMembersList()}
+        </div>
         {loadMoreBtn}
       </div>
     );
@@ -39,3 +48,4 @@ var MembersList = React.createClass({
 });
 
 module.exports = MembersList;
+

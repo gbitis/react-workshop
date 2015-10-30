@@ -2,7 +2,12 @@ var React = require("react");
 
 var Members = React.createClass({
   render: function() {
-    return <li>{this.props.name}</li>;
+    return (
+      <div className="member">
+        {this.props.name}
+        <span className={this.props.response}>{this.props.response}</span>
+      </div>
+    );
   }
 });
 

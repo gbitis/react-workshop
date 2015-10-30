@@ -20,16 +20,17 @@ function _processData(data) {
   
   for (var memberIndex in data.results) {
     var member = data.results[memberIndex].member;
+    
     _members[member.member_id] = {
       id: member.member_id,
-      name: member.name
+      name: member.name,
+      response: data.results[memberIndex].response,
     };
   }
 };
 
 var MembersListStore = assign({}, EventEmitter.prototype, {
   getMembersPage: function() {
-    var $this = this;
     $.getJSON(
       _nextPageUrl,
       function(data) {
@@ -71,6 +72,7 @@ var MembersListStore = assign({}, EventEmitter.prototype, {
     return _membersCount == _membersTotalCount;
   },
 });
+
 
 MembersListStore.dispatchToken = Dispatcher.register(function(action) {
 

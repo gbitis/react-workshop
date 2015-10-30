@@ -420,9 +420,14 @@ var Members = React.createClass({
 
   render: function render() {
     return React.createElement(
-      "li",
-      null,
-      this.props.name
+      "div",
+      { className: "member" },
+      this.props.name,
+      React.createElement(
+        "span",
+        { className: this.props.response },
+        this.props.response
+      )
     );
   }
 });
@@ -451,27 +456,30 @@ var MembersList = React.createClass({
     });
 
     return membersArr.map(function (member) {
-      return React.createElement(Member, { name: member.name, key: member.id });
+      return React.createElement(Member, {
+        name: member.name,
+        response: member.response,
+        key: member.id
+      });
     });
   },
 
   render: function render() {
-
     var loadMoreBtn = this.props.allLoaded ? null : React.createElement(
       "div",
-      { onClick: this.props._getNextMembersPage },
-      "Load more..."
+      {
+        className: "loadMoreBtn",
+        onClick: this.props._getNextMembersPage },
+      "Load more"
     );
-
-    var members = this._processMembersList();
 
     return React.createElement(
       "div",
       null,
       React.createElement(
-        "ul",
-        null,
-        members
+        "div",
+        { className: "membersList" },
+        this._processMembersList()
       ),
       loadMoreBtn
     );
@@ -608,16 +616,17 @@ function _processData(data) {
 
   for (var memberIndex in data.results) {
     var member = data.results[memberIndex].member;
+
     _members[member.member_id] = {
       id: member.member_id,
-      name: member.name
+      name: member.name,
+      response: data.results[memberIndex].response
     };
   }
 };
 
 var MembersListStore = assign({}, EventEmitter.prototype, {
   getMembersPage: function getMembersPage() {
-    var $this = this;
     $.getJSON(_nextPageUrl, function (data) {
       MemberListActions.batchLoaded(data);
     });

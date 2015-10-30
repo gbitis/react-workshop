@@ -528,11 +528,20 @@ var MembersListContainer = React.createClass({
       );
     }
 
-    return React.createElement(MembersList, {
-      allLoaded: this.state.allLoaded,
-      members: this.state.members,
-      _getNextMembersPage: this._getNextMembersPage
-    });
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'h2',
+        null,
+        'Members'
+      ),
+      React.createElement(MembersList, {
+        allLoaded: this.state.allLoaded,
+        members: this.state.members,
+        _getNextMembersPage: this._getNextMembersPage
+      })
+    );
   },
 
   _onChange: function _onChange() {
@@ -586,7 +595,7 @@ ReactDOM.render(React.createElement(
     React.createElement(
         'h1',
         null,
-        'React workshop - members'
+        'React workshop'
     ),
     React.createElement(MembersListContainer, null)
 ), document.getElementById('container'));

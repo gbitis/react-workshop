@@ -26,15 +26,18 @@ var MembersListContainer = React.createClass({
   
   render: function() {
     if (!this.state.members && !this.state.isAllLoaded) {
-      return <div>Loading</div>;
+      return <div>Loading ...</div>;
     }
     
     return (
-      <MembersList
-        allLoaded={this.state.allLoaded}
-        members={this.state.members}
-        _getNextMembersPage={this._getNextMembersPage}
-      />
+      <div>
+        <h2>Members</h2>
+        <MembersList
+          allLoaded={this.state.allLoaded}
+          members={this.state.members}
+          _getNextMembersPage={this._getNextMembersPage}
+        />
+      </div>
     );
   },
   

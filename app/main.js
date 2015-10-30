@@ -6,7 +6,7 @@ var ReactDOM = require('react-dom');
 
 ReactDOM.render(
     <div>
-        <h1>React workshop - members</h1>
+        <h1>React workshop</h1>
         <MembersListContainer />
     </div>,
     document.getElementById('container')

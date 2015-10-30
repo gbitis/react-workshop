@@ -6,8 +6,18 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
-      socket.on('newdata', function(msg){
+      var ReactHooks = {};
+      ReactHooks.callbackNewPost = function(msg) {
+        // to be overriden
+      };
+      
+      ReactHooks.getPosts = function() {
+        socket.emit("getPosts");
+      }
+      
+      socket.on('data', function(msg){
         console.log(msg);
+        ReactHooks.callbackNewPost(msg);
       });
     </script>
 </head>

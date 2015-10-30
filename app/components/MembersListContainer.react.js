@@ -30,14 +30,14 @@ var MembersListContainer = React.createClass({
     }
     
     return (
-      <div>
+      <section>
         <h2>Members</h2>
         <MembersList
           allLoaded={this.state.allLoaded}
           members={this.state.members}
           _getNextMembersPage={this._getNextMembersPage}
         />
-      </div>
+      </section>
     );
   },
   

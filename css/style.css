@@ -1,4 +1,4 @@
-h1, h2 {
+body, h1, h2 {
   font-family: Arial;
 }
 
@@ -8,6 +8,7 @@ h1, h2 {
   cursor: pointer;
   display: inline-block;
   font-family: Arial;
+  margin: 5px;
   padding: 10px;
   text-align: center;
   width: auto;
@@ -32,4 +33,29 @@ h1, h2 {
 .no {
   color: red;
   float: right;
+}
+
+.commentSection {
+  margin: 20px 5px;
+}
+
+.commentAuthor {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.commentTime {
+  font-size: 12px;
+  margin-left: 15px;
+}
+
+.commentText {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+section {
+  display: block;
+  float: left;
+  width: 50%;
 }

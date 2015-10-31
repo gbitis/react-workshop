@@ -401,7 +401,12 @@ var ActionTypes = Constants.ActionTypes;
 
 var CommentsListActions = {
 
-  // To do: Implement actions
+  commentsLoaded: function commentsLoaded(data) {
+    Dispatcher.dispatch({
+      type: ActionTypes.COMMENTS_LOADED,
+      data: data
+    });
+  }
 
 };
 
@@ -429,17 +434,35 @@ module.exports = MemberListActions;
 },{"../constants/Constants":12,"../dispatcher/Dispatcher":13}],5:[function(require,module,exports){
 // Comment.react.js
 
-'use strict';
+"use strict";
 
 var React = require('react');
 
 var Comment = React.createClass({
-  displayName: 'Comment',
+  displayName: "Comment",
 
   render: function render() {
-    // To do: implement comment component
+    var time = new Date(this.props.timestamp);
 
-    return React.createElement('div', null);
+    return React.createElement(
+      "div",
+      { className: "commentSection" },
+      React.createElement(
+        "span",
+        { className: "commentAuthor" },
+        this.props.member_name
+      ),
+      React.createElement(
+        "span",
+        { className: "commentTime" },
+        time.toLocaleString()
+      ),
+      React.createElement(
+        "div",
+        { className: "commentText" },
+        this.props.comment
+      )
+    );
   }
 
 });
@@ -474,9 +497,34 @@ var React = require('react');
 var CommentsList = React.createClass({
   displayName: "CommentsList",
 
+  _processComments: function _processComments() {
+    var comments = this.props.comments;
+    var commentsArr = Object.keys(comments).map(function (key) {
+      return comments[key];
+    });
+
+    commentsArr.sort(function (obj1, obj2) {
+      if (obj1.timestamp > obj2.timestamp) return -1;
+      if (obj1.timestamp < obj2.timestamp) return 1;
+      return 0;
+    });
+
+    return commentsArr.map(function (comment) {
+      return React.createElement(Comment, {
+        member_name: comment.member_name,
+        comment: comment.comment,
+        timestamp: comment.timestamp,
+        key: comment.id
+      });
+    });
+  },
+
   render: function render() {
-    // To to: Implement CommentList component
-    return React.createElement("div", null);
+    return React.createElement(
+      "div",
+      null,
+      this._processComments()
+    );
   }
 
 });
@@ -497,8 +545,37 @@ var React = require('react');
 var CommentsListContainer = React.createClass({
   displayName: "CommentsListContainer",
 
+  getInitialState: function getInitialState() {
+    return {
+      comments: null
+    };
+  },
+
+  componentWillMount: function componentWillMount() {
+    ReactHooks.getPosts();
+  },
+
+  componentDidMount: function componentDidMount() {
+    CommentsListStore.addChangeListener(this._onChange);
+    /* global ReactHooks */
+    ReactHooks.callbackNewPost = this._onCommentsUpdate;
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    CommentsListStore.removeChangeListener(this._onChange);
+  },
+
   render: function render() {
     // To do: Implement CommentsListContainer component
+    console.log(this.state.comments);
+
+    if (!this.state.comments) {
+      return React.createElement(
+        "div",
+        null,
+        "Loading ... "
+      );
+    }
 
     return React.createElement(
       "section",
@@ -507,8 +584,19 @@ var CommentsListContainer = React.createClass({
         "h2",
         null,
         "Comments"
-      )
+      ),
+      React.createElement(CommentsList, { comments: this.state.comments })
     );
+  },
+
+  _onChange: function _onChange() {
+    this.setState({
+      comments: CommentsListStore.getAll()
+    });
+  },
+
+  _onCommentsUpdate: function _onCommentsUpdate(data) {
+    CommentsListActions.commentsLoaded(data);
   }
 });
 
@@ -724,15 +812,60 @@ var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
 
+var _comments = {};
+
+function _processData(data) {
+  data = JSON.parse(data);
+  for (var commentIndex in data.results) {
+    var comment = data.results[commentIndex];
+    _comments[comment.event_comment_id] = {
+      id: comment.event_comment_id,
+      member_name: comment.member_name,
+      timestamp: comment.time,
+      comment: comment.comment
+    };
+  }
+}
+
 var CommentsListStore = assign({}, EventEmitter.prototype, {
   // To do: Implement commentsListStore
+
+  emitChange: function emitChange() {
+    this.emit(CHANGE_EVENT);
+  },
+
+  /**
+   * @param {function} callback
+   */
+  addChangeListener: function addChangeListener(callback) {
+    this.on(CHANGE_EVENT, callback);
+  },
+
+  /**
+   * @param {function} callback
+   */
+  removeChangeListener: function removeChangeListener(callback) {
+    this.removeListener(CHANGE_EVENT, callback);
+  },
+
+  getAll: function getAll() {
+    return _comments;
+  }
 
 });
 
 CommentsListStore.dispatchToken = Dispatcher.register(function (action) {
 
-  // To do: Handle actions
+  switch (action.type) {
 
+    case Constants.ActionTypes.COMMENTS_LOADED:
+      _processData(action.data);
+      CommentsListStore.emitChange();
+      break;
+
+    default:
+    // do nothing
+  }
 });
 
 module.exports = CommentsListStore;
